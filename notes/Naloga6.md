@@ -20,7 +20,7 @@ verjetno najlažje najdit v Kibani.
 
 ### Izolacija in toleranca napak  
 
-`GET /v1/song/circuit-breaker/1` (Java service)  
+`GET http://35.204.170.47/v1/song/circuit-breaker/1` (Java service)  
 - vrača pesem z ID-jem 1
 - v ta testni endpoint je vgrajena ~20% možnost, da se sproži napaka
 - če 10% requestov (v nekem časovnem obdobju) faila, se krog zapre in ne spusti čez nobenega
