@@ -8,5 +8,9 @@ In our example, this includes *metadata management* (data about artists, songs, 
 
 Some other concepts that we also use in this project are service discovery, configuration management (etcd), containerization (Docker, docker-compose), container orchestration (Kubernetes).
 
+# Running docker-compose
+Note: when running `$ docker-compose up`, make sure that the versions inside `docker-compose.yml` 
+are set properly (so that Docker pulls the right versions of images). 
+
 # Architecture
 **TODO: a more detailed description of architecture, perhaps?**

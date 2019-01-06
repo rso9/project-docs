@@ -1,0 +1,69 @@
+version: "3"
+services:
+  catalog-management:
+    container_name: catalog-management
+    image: rso9/catalog-management:0.2.4
+    ports:
+    - "8080:8080"
+    environment:
+    # DB params only required locally (i.e. when deployed on travis/k8s, these should be set with those env vars
+    - CONNECTION_URL=jdbc:postgresql://db:5432/catalog
+    - DB_USER=postgres
+    - DB_PASS=admin
+    - KUMULUZEE_DISCOVERY_ETCD_HOSTS=http://etcd:2379
+    - KUMULUZEE_CONFIG_ETCD_HOSTS=http://etcd:2379
+    depends_on:
+    - db
+    - etcd
+  db:
+    container_name: catalog
+    image: postgres:latest
+    ports:
+    - "5432:5432"
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=admin
+    - POSTGRES_DB=catalog
+  auth:
+    container_name: auth
+    image: rso9/auth:0.7.3
+    ports:
+    - "80:3000"
+    environment:
+      VERSION: 0.7.3
+      KUMULUZEE_CONFIG_ETCD_HOSTS: http://etcd:2379
+      KUMULUZEE_DISCOVERY_ETCD_HOSTS: http://etcd:2379
+    depends_on:
+    - etcd
+  media-storage:
+    container_name: media-storage
+    image: rso9/media-storage:0.1.0
+    ports:
+    - "8081:8080"
+    environment:
+    - KUMULUZEE_DISCOVERY_ETCD_HOSTS=http://etcd:2379
+    - KUMULUZEE_CONFIG_ETCD_HOSTS=http://etcd:2379
+    depends_on:
+    - etcd
+  frontend:
+    container_name: frontend
+    image: rso9/frontend:0.1.2
+    ports:
+    - "3000:3000"
+    depends_on:
+    - catalog-management
+    - auth
+    - media-storage
+  etcd:
+    image: quay.io/coreos/etcd:latest
+    ports:
+    - "2379:2379"
+    command: >-
+      /usr/local/bin/etcd
+      -name node1
+      -advertise-client-urls http://etcd:2379
+      -listen-client-urls http://0.0.0.0:2379
+      -initial-advertise-peer-urls http://etcd:2380
+      -listen-peer-urls http://0.0.0.0:2380
+      -initial-cluster node1=http://etcd:2380
+      -cors="*"
