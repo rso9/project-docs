@@ -3,12 +3,6 @@
 ### Implementacija centralnega beleženja dnevnikov
 Uporabljen Elastic-Stack-as-a-service (https://logit.io/).  
 
-**TODO pred zagovorom**:  
-- naredi nov trial account, ker bo ta potekel pred zagovorom vaj,  
-- parkrat poženi aplikacije, ki imajo nastavljeno logiranje z 
-različnimi verzijami aplikacije, iz različnih naslovov in kaj podobnega
-(da se bojo vidli vsaj malo drugačni logsi) - TL;DR: nafilaj LogStash.
-
 **Primeri poizvedb (Kibana Query Language)**:
 1. Pridobi logse za zahtevke iz specifičnega IP-ja na specifično instanco mikrostoritve
 (specificirano z unique instance ID-jem). Tako IP kot unique ID instance je 
@@ -25,4 +19,9 @@ verjetno najlažje najdit v Kibani.
 
 
 ### Izolacija in toleranca napak  
-TBD
+
+`GET /v1/song/circuit-breaker/1` (Java service)  
+- vrača pesem z ID-jem 1
+- v ta testni endpoint je vgrajena ~20% možnost, da se sproži napaka
+- če 10% requestov (v nekem časovnem obdobju) faila, se krog zapre in ne spusti čez nobenega
+zahtevka - takrat uporablja fallback mehanizem, vračanje privzete pesmi
